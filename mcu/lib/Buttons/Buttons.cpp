@@ -33,12 +33,27 @@ void selectNavigation()
 		switch (currentRow)
 		{
 		case 2:
-			numberEntry();
+			numberEntry(SELECT);
 			break;
 		case 3:
 			// runManual();
 			break;
 		}
+		break;
+	}
+}
+void returnNavigation()
+{
+	switch (currentMenu)
+	{
+	case 2:
+		if (enteringNumber == true)
+		{
+			numberEntry(RETURN);
+			break;
+		}
+
+		homeMenu();
 		break;
 	}
 }
@@ -101,6 +116,7 @@ void returnButtonPress()
 		if ((millis() - returnButtonTime) >= BUTTON_DELAY)
 		{
 			returnButtonTime = millis();
+			returnNavigation();
 		}
 	}
 }

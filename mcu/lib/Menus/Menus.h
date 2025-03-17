@@ -6,6 +6,9 @@
 #define UP 0
 #define DOWN 1
 
+#define SELECT 0
+#define RETURN 1
+
 #define TEXT_BEGINNING 30
 #define POINTER_BEGINNING 10
 #define FIRST_LINE 18
@@ -18,12 +21,10 @@ void presetMenu();
 
 void drawPointer();
 
+void lineChange(u_int8_t direction);
 
-void lineChange(int direction);
-
-void numberEntry();
+void numberEntry(u_int8_t direction);
 void drawUnderline();
-void numberChange(int direction);
-
+void numberChange(u_int8_t direction);
 
 #endif // MENUS_H

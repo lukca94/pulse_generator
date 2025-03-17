@@ -37,7 +37,7 @@ void drawPointer()
 	}
 }
 
-void lineChange(int direction)
+void lineChange(u_int8_t direction)
 {
 	if (freezePointer == true)
 	{
@@ -84,44 +84,61 @@ void drawUnderline()
 		underlineTime = millis();
 		if (underlineState == true)
 		{
-			tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, SECOND_LINE + tft.fontHeight() - 4, tft.textWidth("0") + 2, 2, TFT_BLACK);
+			tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, SECOND_LINE + tft.fontHeight() - 4, tft.textWidth("0"), 2, TFT_BLACK);
 			underlineState = false;
 		}
 		else
 		{
-			tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, SECOND_LINE + tft.fontHeight() - 4, tft.textWidth("0") + 2, 2, TFT_ORANGE);
+			tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, SECOND_LINE + tft.fontHeight() - 4, tft.textWidth("0"), 2, TFT_ORANGE);
 			underlineState = true;
 		}
 	}
 }
 
-void numberEntry()
+void numberEntry(u_int8_t direction)
 {
 	tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, SECOND_LINE + tft.fontHeight() - 4, tft.textWidth("0") + 2, 2, TFT_BLACK);
 	underlineState = false;
 
-	if (selectedNumberPosition == 2)
+	switch (direction)
+	{
+	case SELECT:
+		if (enteringNumber == false)
+		{
+			enteringNumber = true;
+			freezePointer = true;
+		}
+		if (selectedNumberPosition == 5)
+		{
+			enteringNumber = false;
+			freezePointer = false;
+			pointerState = true;
+			selectedNumberPosition = 0;
+			break;
+		}
+		if (selectedNumberPosition == 2)
+			selectedNumberPosition++;
 		selectedNumberPosition++;
+		break;
 
-	if (selectedNumberPosition == 5)
-	{
-		enteringNumber = false;
-		freezePointer = false;
-		pointerState = true;
-		selectedNumberPosition = 0;
-		return;
+	case RETURN:
+		Serial.println(selectedNumberPosition);
+		if (selectedNumberPosition == 1)
+		{
+			enteringNumber = false;
+			freezePointer = false;
+			pointerState = true;
+			selectedNumberPosition = 0;
+			break;
+		}
+		if (selectedNumberPosition == 4)
+			selectedNumberPosition--;
+		selectedNumberPosition--;
+		break;
 	}
-	if (enteringNumber == false)
-	{
-		enteringNumber = true;
-		freezePointer = true;
-	}
-
-	selectedNumberPosition++;
 }
-
-int8_t enteredDigits[5] = {0,0,0,0,0};
-void numberChange(int direction)
+int8_t enteredDigits[5] = {0, 0, 0, 0, 0};
+void numberChange(u_int8_t direction)
 {
 	switch (direction)
 	{
@@ -148,9 +165,10 @@ void numberChange(int direction)
 		break;
 	}
 }
+
 void homeMenu() // Menu 1
 {
-	currentMenu = 1;
+	currentMenu = 1; //DEFINE THESE
 	currentRow = 1;
 	firstRow = 1;
 	numberOfRows = 3;
@@ -185,7 +203,6 @@ void manualMenu() // Menu 2
 			itoa(enteredDigits[i], number, 10);
 			tft.drawString(number, TEXT_BEGINNING + i * 30, SECOND_LINE, GFXFF);
 		}
-			
 	}
 	tft.drawString("Run", TEXT_BEGINNING, THIRD_LINE, GFXFF);
 }
