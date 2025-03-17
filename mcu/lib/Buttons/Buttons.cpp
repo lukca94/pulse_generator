@@ -53,7 +53,10 @@ void upButtonPress()
 		if ((millis() - upButtonTime) >= BUTTON_DELAY)
 		{
 			upButtonTime = millis();
-			lineChange(UP);
+			if (enteringNumber == true)
+				numberChange(UP);
+			else
+				lineChange(UP);
 		}
 	}
 }
@@ -67,7 +70,10 @@ void downButtonPress()
 		if ((millis() - downButtonTime) >= BUTTON_DELAY)
 		{
 			downButtonTime = millis();
-			lineChange(DOWN);
+			if (enteringNumber == true)
+				numberChange(DOWN);
+			else
+				lineChange(DOWN);
 		}
 	}
 }

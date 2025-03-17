@@ -38,9 +38,5 @@ void loop()
 	returnButtonPress();
 
 	drawPointer();
-	// int width = tft.textWidth("Run presets");
-	// Serial.println(width);
-
-	// int height = tft.fontHeight();
-	// Serial.println(height);
+	drawUnderline();
 }

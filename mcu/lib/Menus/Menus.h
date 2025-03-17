@@ -18,7 +18,12 @@ void presetMenu();
 
 void drawPointer();
 
+
 void lineChange(int direction);
+
 void numberEntry();
+void drawUnderline();
+void numberChange(int direction);
+
 
 #endif // MENUS_H

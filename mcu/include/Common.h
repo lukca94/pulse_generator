@@ -13,3 +13,5 @@ extern u_int16_t currentMenu;
 extern u_int16_t currentRow;
 extern u_int16_t firstRow;
 extern u_int16_t numberOfRows;
+
+extern bool enteringNumber;

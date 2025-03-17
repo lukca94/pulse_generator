@@ -14,7 +14,6 @@ int lineCordinates[] = {FIRST_LINE, SECOND_LINE, THIRD_LINE};
 unsigned long pointerTime = 0;
 bool pointerState = false;
 bool freezePointer = false;
-
 void drawPointer()
 {
 	if (freezePointer == true)
@@ -24,7 +23,6 @@ void drawPointer()
 
 	if ((millis() - pointerTime) >= POINTER_DELAY)
 	{
-		// Serial.println("ping");
 		pointerTime = millis();
 		if (pointerState == true)
 		{
@@ -41,6 +39,10 @@ void drawPointer()
 
 void lineChange(int direction)
 {
+	if (freezePointer == true)
+	{
+		return;
+	}
 	switch (direction)
 	{
 	case UP:
@@ -68,13 +70,84 @@ void lineChange(int direction)
 }
 
 u_int8_t selectedNumberPosition = 0;
+unsigned long underlineTime = 0;
+bool underlineState = false;
 bool enteringNumber = false;
-void numberEntry()
+void drawUnderline()
 {
-	freezePointer = true;
-	tft.fillRect(TEXT_BEGINNING + selectedNumberPosition * 30, SECOND_LINE + tft.fontHeight() - 4, tft.textWidth("0") + 2, 2, TFT_ORANGE);
+	if (enteringNumber == false)
+	{
+		return;
+	}
+	if ((millis() - underlineTime) >= POINTER_DELAY)
+	{
+		underlineTime = millis();
+		if (underlineState == true)
+		{
+			tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, SECOND_LINE + tft.fontHeight() - 4, tft.textWidth("0") + 2, 2, TFT_BLACK);
+			underlineState = false;
+		}
+		else
+		{
+			tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, SECOND_LINE + tft.fontHeight() - 4, tft.textWidth("0") + 2, 2, TFT_ORANGE);
+			underlineState = true;
+		}
+	}
 }
 
+void numberEntry()
+{
+	tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, SECOND_LINE + tft.fontHeight() - 4, tft.textWidth("0") + 2, 2, TFT_BLACK);
+	underlineState = false;
+
+	if (selectedNumberPosition == 2)
+		selectedNumberPosition++;
+
+	if (selectedNumberPosition == 5)
+	{
+		enteringNumber = false;
+		freezePointer = false;
+		pointerState = true;
+		selectedNumberPosition = 0;
+		return;
+	}
+	if (enteringNumber == false)
+	{
+		enteringNumber = true;
+		freezePointer = true;
+	}
+
+	selectedNumberPosition++;
+}
+
+int8_t enteredDigits[5] = {0,0,0,0,0};
+void numberChange(int direction)
+{
+	switch (direction)
+	{
+	case UP:
+		if (enteredDigits[(selectedNumberPosition - 1)] < 9)
+		{
+			enteredDigits[(selectedNumberPosition - 1)]++;
+			char number[2];
+			itoa(enteredDigits[(selectedNumberPosition - 1)], number, 10);
+			tft.drawString(number, TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, SECOND_LINE, GFXFF);
+		}
+
+		break;
+
+	case DOWN:
+		if (enteredDigits[(selectedNumberPosition - 1)] > 0)
+		{
+			enteredDigits[(selectedNumberPosition - 1)]--;
+			char number[2];
+			itoa(enteredDigits[(selectedNumberPosition - 1)], number, 10);
+			tft.drawString(number, TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, SECOND_LINE, GFXFF);
+		}
+
+		break;
+	}
+}
 void homeMenu() // Menu 1
 {
 	currentMenu = 1;
@@ -102,17 +175,18 @@ void manualMenu() // Menu 2
 
 	tft.fillScreen(TFT_BLACK);
 	tft.drawString("Enter f (Hz):", TEXT_BEGINNING, FIRST_LINE, GFXFF);
-	// char buffer[10];
-	// sprintf(buffer, "%d", tft.textWidth("0 "));
-	// tft.drawString((buffer), TEXT_BEGINNING, SECOND_LINE, GFXFF);
 	for (size_t i = 0; i < 5; i++)
 	{
 		if (i == 2)
 			tft.drawString(",", TEXT_BEGINNING + i * 30, SECOND_LINE, GFXFF);
 		else
-			tft.drawString("0", TEXT_BEGINNING + i * 30, SECOND_LINE, GFXFF);
+		{
+			char number[2];
+			itoa(enteredDigits[i], number, 10);
+			tft.drawString(number, TEXT_BEGINNING + i * 30, SECOND_LINE, GFXFF);
+		}
+			
 	}
-
 	tft.drawString("Run", TEXT_BEGINNING, THIRD_LINE, GFXFF);
 }
 void presetMenu() // Menu 3 NOTDONE
