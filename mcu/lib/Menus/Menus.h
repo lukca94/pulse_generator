@@ -1,7 +1,6 @@
-#include "../../include/Free_Fonts.h"
+
 
 #ifndef MENUS_H
-#define MENUS_H
 
 #define UP 0
 #define DOWN 1
@@ -19,12 +18,6 @@ void homeMenu();
 void manualMenu();
 void presetMenu();
 
-void drawPointer();
 
-void lineChange(u_int8_t direction);
-
-void numberEntry(u_int8_t direction);
-void drawUnderline();
-void numberChange(u_int8_t direction);
 
 #endif // MENUS_H

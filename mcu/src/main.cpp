@@ -3,9 +3,10 @@
 #include <SPI.h>
 #include <TFT_eSPI.h>
 
-#include "Menus.h"
 #include "Common.h"
+#include "Menus.h"
 #include "Buttons.h"
+#include "Control.h"
 
 // screen size 135x240
 TFT_eSPI tft = TFT_eSPI();
@@ -30,6 +31,7 @@ void setup()
 
 	homeMenu();
 }
+
 void loop()
 {
 	upButtonPress();

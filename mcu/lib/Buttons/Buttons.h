@@ -6,6 +6,5 @@ void downButtonPress();
 void selectButtonPress();
 void returnButtonPress();
 
-void select();
 
 #endif // BUTTONS_H

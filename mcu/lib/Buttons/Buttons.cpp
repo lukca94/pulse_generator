@@ -1,62 +1,9 @@
 #include <Arduino.h>
 
-#include "Menus.h"
+#include "Navigation.h"
 #include "../../include/Common.h"
 
 #define BUTTON_DELAY 300
-
-u_int16_t currentMenu;
-u_int16_t currentRow;
-u_int16_t firstRow;
-u_int16_t numberOfRows;
-
-void selectNavigation()
-{
-	switch (currentMenu)
-	{
-	case 1:
-		switch (currentRow)
-		{
-		case 1:
-			manualMenu();
-			break;
-		case 2:
-			presetMenu();
-			break;
-		case 3:
-			// runPresets();
-			break;
-		}
-		break;
-
-	case 2:
-		switch (currentRow)
-		{
-		case 2:
-			numberEntry(SELECT);
-			break;
-		case 3:
-			// runManual();
-			break;
-		}
-		break;
-	}
-}
-void returnNavigation()
-{
-	switch (currentMenu)
-	{
-	case 2:
-		if (enteringNumber == true)
-		{
-			numberEntry(RETURN);
-			break;
-		}
-
-		homeMenu();
-		break;
-	}
-}
 
 unsigned long upButtonTime = 0;
 void upButtonPress()
@@ -68,10 +15,7 @@ void upButtonPress()
 		if ((millis() - upButtonTime) >= BUTTON_DELAY)
 		{
 			upButtonTime = millis();
-			if (enteringNumber == true)
-				numberChange(UP);
-			else
-				lineChange(UP);
+			upNavigation();
 		}
 	}
 }
@@ -85,10 +29,7 @@ void downButtonPress()
 		if ((millis() - downButtonTime) >= BUTTON_DELAY)
 		{
 			downButtonTime = millis();
-			if (enteringNumber == true)
-				numberChange(DOWN);
-			else
-				lineChange(DOWN);
+			downNavigation();
 		}
 	}
 }
