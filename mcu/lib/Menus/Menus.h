@@ -17,7 +17,6 @@
 void homeMenu();
 void manualMenu();
 void presetMenu();
-
-
+void presetRemovingMenu();
 
 #endif // MENUS_H

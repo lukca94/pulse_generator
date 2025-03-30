@@ -6,11 +6,12 @@
 
 #include "Control.h"
 #include "Menus.h"
+#include "Presets.h"
 #include "../../include/Common.h"
 
 void homeMenu() // Menu 1
 {
-	currentMenu = 1; // DEFINE THESE AS WORDS
+	currentMenu = HOME_MENU; // DEFINE THESE AS WORDS
 	currentRow = 1;
 	firstRow = 1;
 	numberOfRows = 3;
@@ -25,7 +26,7 @@ void homeMenu() // Menu 1
 }
 void manualMenu() // Menu 2
 {
-	currentMenu = 2;
+	currentMenu = MANUAL_MENU;
 	currentRow = 2;
 	firstRow = 2;
 	numberOfRows = 3;
@@ -48,18 +49,32 @@ void manualMenu() // Menu 2
 	}
 	tft.drawString("Run", TEXT_BEGINNING, THIRD_LINE, GFXFF);
 }
-void presetMenu() // Menu 3 NOTDONE
+void presetMenu()
 {
-	currentMenu = 3;
+	currentMenu = PRESETS_MENU;
 	currentRow = 2;
 	firstRow = 2;
 	numberOfRows = 3;
+	topShownLine = 0;
 
 	pointerState = false;
 	// pointerTime = 0;
 
 	tft.fillScreen(TFT_BLACK);
-	tft.drawString("Presets", TEXT_BEGINNING, FIRST_LINE, GFXFF);
-	tft.drawString("0 0 , 0 0", TEXT_BEGINNING, SECOND_LINE, GFXFF);
-	tft.drawString("0 0 , 0 0", TEXT_BEGINNING, THIRD_LINE, GFXFF);
+	drawScrollableMenu();
+}
+
+void presetRemovingMenu()
+{
+	currentMenu = PRESETS_REMOVING_MENU;
+	currentRow = 2;
+	firstRow = 2;
+	numberOfRows = 3;
+	topShownLine = 0;
+
+	pointerState = false;
+	// pointerTime = 0;
+
+	tft.fillScreen(TFT_BLACK);
+	drawScrollableRemoveMenu();
 }

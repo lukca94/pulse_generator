@@ -7,6 +7,7 @@
 #include "Menus.h"
 #include "Buttons.h"
 #include "Control.h"
+#include "Presets.h"
 
 // screen size 135x240
 TFT_eSPI tft = TFT_eSPI();
@@ -30,6 +31,7 @@ void setup()
 	tft.setTextColor(TFT_ORANGE, TFT_BLACK);
 
 	homeMenu();
+
 }
 
 void loop()

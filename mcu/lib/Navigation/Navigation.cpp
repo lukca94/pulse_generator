@@ -3,18 +3,18 @@
 #include "Menus.h"
 #include "Control.h"
 #include "../../include/Common.h"
+#include "Presets.h"
 
 uint16_t currentMenu;
 uint16_t currentRow;
 uint16_t firstRow;
 uint16_t numberOfRows;
 
-
 void selectNavigation()
 {
 	switch (currentMenu)
 	{
-	case 1:
+	case HOME_MENU:
 		switch (currentRow)
 		{
 		case 1:
@@ -29,7 +29,7 @@ void selectNavigation()
 		}
 		break;
 
-	case 2:
+	case MANUAL_MENU:
 		switch (currentRow)
 		{
 		case 2:
@@ -40,21 +40,39 @@ void selectNavigation()
 			break;
 		}
 		break;
+	case PRESETS_MENU:
+		if (currentRow == addPosition)
+			addPreset(); // unconsistent when header shown
+		else if (currentRow == removePosition)
+			presetRemovingMenu();
+		else
+		{
+			// numberStuff
+		}
+		break;
+	case PRESETS_REMOVING_MENU:
+		removePreset(topShownLine + currentRow - 1);
+		presetMenu();
+		break;
 	}
 }
 void returnNavigation()
 {
 	switch (currentMenu)
 	{
-	case 2:
+	case MANUAL_MENU:
 		if (enteringNumber == true)
 		{
 			numberEntry(RETURN);
 			break;
 		}
-
 		homeMenu();
 		break;
+	case PRESETS_MENU:
+		homeMenu();
+		break;
+	case PRESETS_REMOVING_MENU:
+		presetMenu();
 	}
 }
 void upNavigation()

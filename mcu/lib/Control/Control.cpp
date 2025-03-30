@@ -6,9 +6,12 @@
 #include <stdint.h> // Include standard header for uint8_t
 
 #include "Menus.h"
+#include "Presets.h"
 #include "../../include/Common.h"
 
 #define POINTER_DELAY 1000
+#define DIGIT_OFFSET 30
+#define COMMA_OFFSET 60
 
 int lineCordinates[] = {FIRST_LINE, SECOND_LINE, THIRD_LINE};
 
@@ -38,6 +41,128 @@ void drawPointer()
 	}
 }
 
+void drawNumber(uint16_t arrayIndex, uint8_t lineIndex)
+{
+	tft.drawString(",", TEXT_BEGINNING + COMMA_OFFSET, lineIndex, GFXFF);
+	for (size_t i = 0; i < 4; i++)
+	{
+		char number[2];
+		itoa(presetsArray[arrayIndex][i], number, 10);
+		uint16_t offset = (i >= 2) ? (i + 1) * DIGIT_OFFSET : i * DIGIT_OFFSET;
+		tft.drawString(number, TEXT_BEGINNING + offset, lineIndex, GFXFF);
+	}
+}
+
+uint16_t topShownLine;
+uint16_t scrollableLines;
+uint8_t addPosition;
+uint8_t removePosition;
+void drawScrollableMenu()
+{
+	tft.fillScreen(TFT_BLACK);
+
+	if (topShownLine == 0) // Show header
+	{
+		firstRow = 2;	// Block first line selection
+		currentRow = 2; // Select first non-header line
+
+		tft.drawString("Presets", TEXT_BEGINNING, FIRST_LINE, GFXFF);
+		if (numberOfPresets == 0)
+		{
+
+			tft.drawString("No presets", TEXT_BEGINNING, SECOND_LINE, GFXFF);
+			tft.drawString("Add", TEXT_BEGINNING, THIRD_LINE, GFXFF);
+
+			addPosition = 3;
+			removePosition = 0;
+		}
+		else
+		{
+			uint8_t presetsToShow = numberOfPresets - topShownLine;
+			if (presetsToShow > 2)
+				presetsToShow = 2;
+			for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
+			{
+				drawNumber(topShownLine, lineCordinates[i - topShownLine + 1]);
+			}
+			addPosition = 0;
+			removePosition = 0;
+			if (presetsToShow == 1)
+			{
+				tft.drawString("Add", TEXT_BEGINNING, THIRD_LINE, GFXFF);
+
+				addPosition = 3;
+			}
+		}
+	}
+	else // Don't show header
+	{
+		firstRow = 1; // Allow first line selection
+
+		uint8_t presetsToShow = numberOfPresets - topShownLine + 1;
+		Serial.println(presetsToShow);
+		if (presetsToShow > 3)
+			presetsToShow = 3;
+		for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
+		{
+			drawNumber(topShownLine, lineCordinates[i - topShownLine]);
+		}
+		addPosition = 0;
+		removePosition = 0;
+		if (presetsToShow == 1)
+		{
+			tft.drawString("Add", TEXT_BEGINNING, SECOND_LINE, GFXFF);
+			tft.drawString("Remove", TEXT_BEGINNING, THIRD_LINE, GFXFF);
+
+			addPosition = 2;
+			removePosition = 3;
+		}
+		else if (presetsToShow == 2)
+		{
+			tft.drawString("Add", TEXT_BEGINNING, THIRD_LINE, GFXFF);
+
+			addPosition = 3;
+		}
+	}
+}
+void drawScrollableRemoveMenu()
+{
+	tft.fillScreen(TFT_BLACK);
+
+	if (topShownLine == 0) // Show header
+	{
+		firstRow = 2;	// Block first line selection
+		currentRow = 2; // Select first non-header line
+
+		tft.drawString("Choose", TEXT_BEGINNING, FIRST_LINE, GFXFF);
+
+		uint8_t presetsToShow = numberOfPresets - topShownLine;
+		if (presetsToShow > 2)
+			presetsToShow = 2;
+		for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
+		{
+			drawNumber(topShownLine, lineCordinates[i - topShownLine + 1]);
+		}
+		if (presetsToShow == 1)
+		{
+			numberOfRows = 2;
+		}
+	}
+	else // Don't show header
+	{
+		firstRow = 1; // Allow first line selection
+
+		uint8_t presetsToShow = numberOfPresets - topShownLine + 1;
+		Serial.println(presetsToShow);
+		if (presetsToShow > 3)
+			presetsToShow = 3;
+		for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
+		{
+			drawNumber(topShownLine, lineCordinates[i - topShownLine]);
+		}
+	}
+}
+
 void lineChange(uint8_t direction)
 {
 	if (freezePointer == true)
@@ -54,6 +179,17 @@ void lineChange(uint8_t direction)
 			pointerState = false;
 			pointerTime = 0;
 		}
+		else if (currentMenu == 3 || currentMenu == 4)
+		{
+			if (topShownLine != 0) // Upper limit
+			{
+				topShownLine--;
+				if (currentMenu == 3)
+					drawScrollableMenu();
+				else if (currentMenu == 4)
+					drawScrollableRemoveMenu();
+			}
+		}
 
 		break;
 
@@ -65,7 +201,24 @@ void lineChange(uint8_t direction)
 			pointerState = false;
 			pointerTime = 0;
 		}
+		else if (currentMenu == 3)
+		{
+			if (topShownLine != numberOfPresets) // Bottom limit
+			{
+				topShownLine++;
 
+				drawScrollableMenu();
+			}
+		}
+		else if (currentMenu == 4)
+		{
+			if (topShownLine < numberOfPresets - 2) // Bottom limit
+			{
+				topShownLine++;
+
+				drawScrollableRemoveMenu();
+			}
+		}
 		break;
 	}
 }
@@ -138,7 +291,7 @@ void numberEntry(uint8_t direction)
 	}
 }
 
-uint8_t enteredDigits[5] = {0, 0, 0, 0, 0}; 
+uint8_t enteredDigits[5] = {0, 0, 0, 0, 0};
 void numberChange(uint8_t direction)
 {
 	switch (direction)

@@ -14,4 +14,7 @@ void numberEntry(uint8_t direction);
 
 void numberChange(uint8_t direction);
 
+void drawScrollableMenu();
+void drawScrollableRemoveMenu();
+
 #endif // CONTROL_H
