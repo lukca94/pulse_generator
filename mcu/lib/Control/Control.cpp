@@ -83,7 +83,7 @@ void drawScrollableMenu()
 				presetsToShow = 2;
 			for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
 			{
-				drawNumber(topShownLine, lineCordinates[i - topShownLine + 1]);
+				drawNumber(i, lineCordinates[i - topShownLine + 1]);
 			}
 			addPosition = 0;
 			removePosition = 0;
@@ -100,13 +100,14 @@ void drawScrollableMenu()
 		firstRow = 1; // Allow first line selection
 
 		uint8_t presetsToShow = numberOfPresets - topShownLine + 1;
-		Serial.println(presetsToShow);
+
 		if (presetsToShow > 3)
 			presetsToShow = 3;
 		for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
 		{
-			drawNumber(topShownLine, lineCordinates[i - topShownLine]);
+			drawNumber(i - 1, lineCordinates[i - topShownLine]); // Hopefully this is fine :)
 		}
+
 		addPosition = 0;
 		removePosition = 0;
 		if (presetsToShow == 1)
@@ -141,7 +142,7 @@ void drawScrollableRemoveMenu()
 			presetsToShow = 2;
 		for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
 		{
-			drawNumber(topShownLine, lineCordinates[i - topShownLine + 1]);
+			drawNumber(i, lineCordinates[i - topShownLine + 1]);
 		}
 		if (presetsToShow == 1)
 		{
@@ -158,7 +159,7 @@ void drawScrollableRemoveMenu()
 			presetsToShow = 3;
 		for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
 		{
-			drawNumber(topShownLine, lineCordinates[i - topShownLine]);
+			drawNumber(i, lineCordinates[i - topShownLine]);
 		}
 	}
 }
@@ -238,20 +239,22 @@ void drawUnderline()
 		underlineTime = millis();
 		if (underlineState == true)
 		{
-			tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, SECOND_LINE + tft.fontHeight() - 4, tft.textWidth("0"), 2, TFT_BLACK);
+			tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, lineCordinates[currentRow-1] + tft.fontHeight() - 4, tft.textWidth("0"), 2, TFT_BLACK);
 			underlineState = false;
 		}
 		else
 		{
-			tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, SECOND_LINE + tft.fontHeight() - 4, tft.textWidth("0"), 2, TFT_ORANGE);
+			tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, lineCordinates[currentRow - 1] + tft.fontHeight() - 4, tft.textWidth("0"), 2, TFT_ORANGE);
 			underlineState = true;
 		}
 	}
 }
 
-void numberEntry(uint8_t direction)
+void numberEntry(uint8_t direction) //Hrozně fucked up indexy
 {
-	tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, SECOND_LINE + tft.fontHeight() - 4, tft.textWidth("0") + 2, 2, TFT_BLACK);
+	tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30,
+				 lineCordinates[currentRow - 1] + tft.fontHeight() - 4, tft.textWidth("0") + 2, 2, TFT_BLACK);
+
 	underlineState = false;
 
 	switch (direction)
@@ -300,9 +303,10 @@ void numberChange(uint8_t direction)
 		if (enteredDigits[(selectedNumberPosition - 1)] < 9)
 		{
 			enteredDigits[(selectedNumberPosition - 1)]++;
+
 			char number[2];
 			itoa(enteredDigits[(selectedNumberPosition - 1)], number, 10);
-			tft.drawString(number, TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, SECOND_LINE, GFXFF);
+			tft.drawString(number, TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, lineCordinates[currentRow - 1], GFXFF);
 		}
 
 		break;
@@ -311,9 +315,10 @@ void numberChange(uint8_t direction)
 		if (enteredDigits[(selectedNumberPosition - 1)] > 0)
 		{
 			enteredDigits[(selectedNumberPosition - 1)]--;
+			
 			char number[2];
 			itoa(enteredDigits[(selectedNumberPosition - 1)], number, 10);
-			tft.drawString(number, TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, SECOND_LINE, GFXFF);
+			tft.drawString(number, TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, lineCordinates[currentRow - 1], GFXFF);
 		}
 
 		break;

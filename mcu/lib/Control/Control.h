@@ -1,9 +1,7 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
-#include <stdint.h> 
-
-
+#include <stdint.h>
 
 void drawPointer();
 void drawUnderline();

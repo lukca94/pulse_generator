@@ -42,12 +42,12 @@ void selectNavigation()
 		break;
 	case PRESETS_MENU:
 		if (currentRow == addPosition)
-			addPreset(); // unconsistent when header shown
+			addPreset(); // inconsistent when header shown
 		else if (currentRow == removePosition)
 			presetRemovingMenu();
 		else
 		{
-			// numberStuff
+			numberEntry(SELECT);
 		}
 		break;
 	case PRESETS_REMOVING_MENU:
@@ -69,9 +69,15 @@ void returnNavigation()
 		homeMenu();
 		break;
 	case PRESETS_MENU:
+		if (enteringNumber == true)
+		{
+			numberEntry(RETURN);
+			break;
+		}
 		homeMenu();
 		break;
 	case PRESETS_REMOVING_MENU:
+
 		presetMenu();
 	}
 }
