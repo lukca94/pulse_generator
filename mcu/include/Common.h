@@ -26,7 +26,7 @@ extern bool enteringNumber;
 extern bool pointerState;
 // extern bool freezePointer;
 
-extern uint8_t enteredDigits[5];
+extern uint8_t enteredDigits[4];
 extern int16_t presetsArray[NUMBER_OF_PRESETS][4];
 
 extern uint16_t numberOfPresets;

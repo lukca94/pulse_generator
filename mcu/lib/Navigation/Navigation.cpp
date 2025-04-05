@@ -51,7 +51,7 @@ void selectNavigation()
 		}
 		break;
 	case PRESETS_REMOVING_MENU:
-		removePreset(topShownLine + currentRow - 1);
+		removePreset(topShownLine + currentRow - 2);
 		presetMenu();
 		break;
 	}

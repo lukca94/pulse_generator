@@ -237,23 +237,26 @@ void drawUnderline()
 	if ((millis() - underlineTime) >= POINTER_DELAY)
 	{
 		underlineTime = millis();
+		uint16_t offset = (selectedNumberPosition > 2) ? (selectedNumberPosition)*DIGIT_OFFSET : (selectedNumberPosition - 1) * DIGIT_OFFSET;
+
 		if (underlineState == true)
 		{
-			tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, lineCordinates[currentRow-1] + tft.fontHeight() - 4, tft.textWidth("0"), 2, TFT_BLACK);
+			tft.fillRect(TEXT_BEGINNING + offset, lineCordinates[currentRow - 1] + tft.fontHeight() - 4, tft.textWidth("0"), 2, TFT_BLACK);
 			underlineState = false;
 		}
 		else
 		{
-			tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, lineCordinates[currentRow - 1] + tft.fontHeight() - 4, tft.textWidth("0"), 2, TFT_ORANGE);
+			tft.fillRect(TEXT_BEGINNING + offset, lineCordinates[currentRow - 1] + tft.fontHeight() - 4, tft.textWidth("0"), 2, TFT_ORANGE);
 			underlineState = true;
 		}
 	}
 }
 
-void numberEntry(uint8_t direction) //Hrozně fucked up indexy
+void numberEntry(uint8_t direction)
 {
-	tft.fillRect(TEXT_BEGINNING + (selectedNumberPosition - 1) * 30,
-				 lineCordinates[currentRow - 1] + tft.fontHeight() - 4, tft.textWidth("0") + 2, 2, TFT_BLACK);
+	uint16_t offset = (selectedNumberPosition > 2) ? (selectedNumberPosition)*DIGIT_OFFSET : (selectedNumberPosition - 1) * DIGIT_OFFSET;
+
+	tft.fillRect(TEXT_BEGINNING + offset, lineCordinates[currentRow - 1] + tft.fontHeight() - 4, tft.textWidth("0") + 2, 2, TFT_BLACK);
 
 	underlineState = false;
 
@@ -265,7 +268,7 @@ void numberEntry(uint8_t direction) //Hrozně fucked up indexy
 			enteringNumber = true;
 			freezePointer = true;
 		}
-		if (selectedNumberPosition == 5)
+		if (selectedNumberPosition == 4) // exit
 		{
 			enteringNumber = false;
 			freezePointer = false;
@@ -273,13 +276,13 @@ void numberEntry(uint8_t direction) //Hrozně fucked up indexy
 			selectedNumberPosition = 0;
 			break;
 		}
-		if (selectedNumberPosition == 2)
-			selectedNumberPosition++;
+		// if (selectedNumberPosition == 2)
+		// 	selectedNumberPosition++;
 		selectedNumberPosition++;
 		break;
 
 	case RETURN:
-		if (selectedNumberPosition == 1)
+		if (selectedNumberPosition == 1) // exit
 		{
 			enteringNumber = false;
 			freezePointer = false;
@@ -287,40 +290,75 @@ void numberEntry(uint8_t direction) //Hrozně fucked up indexy
 			selectedNumberPosition = 0;
 			break;
 		}
-		if (selectedNumberPosition == 4)
-			selectedNumberPosition--;
+		// if (selectedNumberPosition == 4)
+		// 	selectedNumberPosition--;
 		selectedNumberPosition--;
 		break;
 	}
 }
 
-uint8_t enteredDigits[5] = {0, 0, 0, 0, 0};
+uint8_t enteredDigits[4] = {0, 0, 0, 0};
 void numberChange(uint8_t direction)
 {
-	switch (direction)
+	uint16_t offset = (selectedNumberPosition > 2) ? (selectedNumberPosition)*DIGIT_OFFSET : (selectedNumberPosition - 1) * DIGIT_OFFSET;
+	switch (currentMenu)
 	{
-	case UP:
-		if (enteredDigits[(selectedNumberPosition - 1)] < 9)
+	case MANUAL_MENU:
+		switch (direction)
 		{
-			enteredDigits[(selectedNumberPosition - 1)]++;
+		case UP:
+			if (enteredDigits[(selectedNumberPosition - 1)] < 9)
+			{
+				enteredDigits[(selectedNumberPosition - 1)]++;
 
-			char number[2];
-			itoa(enteredDigits[(selectedNumberPosition - 1)], number, 10);
-			tft.drawString(number, TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, lineCordinates[currentRow - 1], GFXFF);
+				char number[2];
+				itoa(enteredDigits[(selectedNumberPosition - 1)], number, 10);
+				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
+			}
+
+			break;
+
+		case DOWN:
+			if (enteredDigits[(selectedNumberPosition - 1)] > 0)
+			{
+				enteredDigits[(selectedNumberPosition - 1)]--;
+
+				char number[2];
+				itoa(enteredDigits[(selectedNumberPosition - 1)], number, 10);
+				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
+			}
+
+			break;
 		}
-
 		break;
 
-	case DOWN:
-		if (enteredDigits[(selectedNumberPosition - 1)] > 0)
+	case PRESETS_MENU:
+		switch (direction)
 		{
-			enteredDigits[(selectedNumberPosition - 1)]--;
-			
-			char number[2];
-			itoa(enteredDigits[(selectedNumberPosition - 1)], number, 10);
-			tft.drawString(number, TEXT_BEGINNING + (selectedNumberPosition - 1) * 30, lineCordinates[currentRow - 1], GFXFF);
-		}
+		case UP:
+			if (presetsArray[topShownLine + currentRow - 2][(selectedNumberPosition - 1)] < 9)
+			{
+				presetsArray[topShownLine + currentRow - 2][(selectedNumberPosition - 1)]++;
 
+				char number[2];
+				itoa(presetsArray[topShownLine + currentRow - 2][(selectedNumberPosition - 1)], number, 10);
+				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
+			}
+
+			break;
+
+		case DOWN:
+			if (presetsArray[topShownLine + currentRow - 2][(selectedNumberPosition - 1)] > 0)
+			{
+				presetsArray[topShownLine + currentRow - 2][(selectedNumberPosition - 1)]--;
+
+				char number[2];
+				itoa(presetsArray[topShownLine + currentRow - 2][(selectedNumberPosition - 1)], number, 10);
+				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
+			}
+
+			break;
+		}
 		break;
 	}
 }
