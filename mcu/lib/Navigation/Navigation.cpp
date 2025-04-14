@@ -24,7 +24,7 @@ void selectNavigation()
 			presetMenu();
 			break;
 		case 3:
-			// runPresets();
+			periodsMenu();
 			break;
 		}
 		break;
@@ -33,26 +33,51 @@ void selectNavigation()
 		switch (currentRow)
 		{
 		case 2:
-			numberEntry(SELECT);
+			numberEntry(SELECT, 4);
 			break;
 		case 3:
-			// runManual();
+			periodsMenu();
 			break;
 		}
 		break;
+
 	case PRESETS_MENU:
 		if (currentRow == addPosition)
 			addPreset(); // inconsistent when header shown
 		else if (currentRow == removePosition)
 			presetRemovingMenu();
-		else
-		{
-			numberEntry(SELECT);
-		}
+		else if (numberOfPresets != 0)
+			numberEntry(SELECT, 4);
 		break;
+
 	case PRESETS_REMOVING_MENU:
 		removePreset(topShownLine + currentRow - 2);
 		presetMenu();
+		break;
+
+	case PERIODS_MENU:
+		switch (currentRow)
+		{
+		case 2:
+			numberEntry(SELECT, 3);
+			break;
+		case 3:
+			dutyMenu();
+			break;
+		}
+		break;
+
+	case DUTY_MENU:
+		switch (currentRow)
+		{
+		case 2:
+			numberEntry(SELECT, 3);
+			break;
+		case 3:
+			// presets/manual
+			// Start it all
+			break;
+		}
 		break;
 	}
 }
@@ -63,27 +88,45 @@ void returnNavigation()
 	case MANUAL_MENU:
 		if (enteringNumber == true)
 		{
-			numberEntry(RETURN);
+			numberEntry(RETURN, 4);
 			break;
 		}
 		homeMenu();
 		break;
+
 	case PRESETS_MENU:
 		if (enteringNumber == true)
 		{
-			numberEntry(RETURN);
+			numberEntry(RETURN, 4);
 			break;
 		}
 		homeMenu();
 		break;
-	case PRESETS_REMOVING_MENU:
 
+	case PRESETS_REMOVING_MENU:
 		presetMenu();
+		break;
+	case PERIODS_MENU:
+		if (enteringNumber == true)
+		{
+			numberEntry(RETURN, 3);
+			break;
+		}
+		manualMenu();
+		break;
+
+	case DUTY_MENU:
+		if (enteringNumber == true)
+		{
+			numberEntry(RETURN, 3);
+			break;
+		}
+		periodsMenu();
+		break;
 	}
 }
 void upNavigation()
 {
-
 	if (enteringNumber == true)
 		numberChange(UP);
 	else

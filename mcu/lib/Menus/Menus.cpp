@@ -11,7 +11,7 @@
 
 void homeMenu() // Menu 1
 {
-	currentMenu = HOME_MENU; // DEFINE THESE AS WORDS
+	currentMenu = HOME_MENU;
 	currentRow = 1;
 	firstRow = 1;
 	numberOfRows = 3;
@@ -36,17 +36,7 @@ void manualMenu() // Menu 2
 
 	tft.fillScreen(TFT_BLACK);
 	tft.drawString("Enter f (Hz):", TEXT_BEGINNING, FIRST_LINE, GFXFF);
-	for (size_t i = 0; i < 5; i++) // TOHLE MOŽNÁ PŘEDĚLAT NA SEPARÁTNÍ FUNKCI
-	{
-		if (i == 2)
-			tft.drawString(",", TEXT_BEGINNING + i * 30, SECOND_LINE, GFXFF);
-		else
-		{
-			char number[2];
-			itoa(enteredDigits[i], number, 10);
-			tft.drawString(number, TEXT_BEGINNING + i * 30, SECOND_LINE, GFXFF);
-		}
-	}
+	drawNumberLine(manualDigits, 1, 4);
 	tft.drawString("Run", TEXT_BEGINNING, THIRD_LINE, GFXFF);
 }
 void presetMenu()
@@ -77,4 +67,36 @@ void presetRemovingMenu()
 
 	tft.fillScreen(TFT_BLACK);
 	drawScrollableRemoveMenu();
+}
+
+void periodsMenu()
+{
+	currentMenu = PERIODS_MENU;
+	currentRow = 2;
+	firstRow = 2;
+	numberOfRows = 3;
+
+	pointerState = false;
+	// pointerTime = 0;
+
+	tft.fillScreen(TFT_BLACK);
+	tft.drawString("Periods:", TEXT_BEGINNING, FIRST_LINE, GFXFF);
+	drawNumberLine(periodDigits, 1, 3);
+	tft.drawString("Continue", TEXT_BEGINNING, THIRD_LINE, GFXFF);
+}
+
+void dutyMenu()
+{
+	currentMenu = DUTY_MENU;
+	currentRow = 2;
+	firstRow = 2;
+	numberOfRows = 3;
+
+	pointerState = false;
+	// pointerTime = 0;
+
+	tft.fillScreen(TFT_BLACK);
+	tft.drawString("Duty (%):", TEXT_BEGINNING, FIRST_LINE, GFXFF);
+	drawNumberLine(dutyDigits, 1, 3);
+	tft.drawString("Continue", TEXT_BEGINNING, THIRD_LINE, GFXFF);
 }

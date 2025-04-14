@@ -11,6 +11,8 @@
 #define MANUAL_MENU 2
 #define PRESETS_MENU 3
 #define PRESETS_REMOVING_MENU 4
+#define PERIODS_MENU 5
+#define DUTY_MENU 6
 
 extern TFT_eSPI tft;
 
@@ -26,8 +28,10 @@ extern bool enteringNumber;
 extern bool pointerState;
 // extern bool freezePointer;
 
-extern uint8_t enteredDigits[4];
+extern uint8_t manualDigits[4];
 extern int16_t presetsArray[NUMBER_OF_PRESETS][4];
+extern uint8_t dutyDigits[3];
+extern uint8_t periodDigits[3];
 
 extern uint16_t numberOfPresets;
 

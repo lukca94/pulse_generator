@@ -9,7 +9,7 @@ uint16_t numberOfPresets = 0;
 
 void addPreset()
 {
-	if (numberOfPresets == NUMBER_OF_PRESETS) // maximum number of presets..
+	if (numberOfPresets == NUMBER_OF_PRESETS) // Maximum number of presets..
 		return;
 
 	int16_t newRow[4] = {0, 0, 0, 0};
@@ -20,7 +20,7 @@ void addPreset()
 
 void removePreset(uint16_t index)
 {
-	if (numberOfPresets == 0) // nothing to remove
+	if (numberOfPresets == 0) // Nothing to remove
 		return;
 
 	for (size_t i = index; i < (numberOfPresets - index); i++)
@@ -32,7 +32,4 @@ void removePreset(uint16_t index)
 	memcpy(presetsArray[numberOfPresets], emptyRow, sizeof(emptyRow));
 
 	numberOfPresets--;
-	// CHECK PRINT NUMBER OF PRESETS...d
 }
-
-void editPreset() {}

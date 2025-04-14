@@ -3,21 +3,45 @@
 #include <SPI.h>
 #include <TFT_eSPI.h>
 #include <stdio.h>
-#include <stdint.h> // Include standard header for uint8_t
+#include <stdint.h>
 
 #include "Menus.h"
 #include "Presets.h"
 #include "../../include/Common.h"
 
-#define POINTER_DELAY 1000
+#define POINTER_DELAY 500
 #define DIGIT_OFFSET 30
 #define COMMA_OFFSET 60
 
 int lineCordinates[] = {FIRST_LINE, SECOND_LINE, THIRD_LINE};
 
+uint8_t selectedNumberPosition = 0;
+
 unsigned long pointerTime = 0;
 bool pointerState = false;
 bool freezePointer = false;
+
+uint16_t topShownLine;
+uint16_t scrollableLines;
+uint8_t addPosition;
+uint8_t removePosition;
+
+unsigned long underlineTime = 0;
+bool underlineState = false;
+bool enteringNumber = false;
+
+uint8_t manualDigits[4] = {0, 0, 0, 0};
+uint8_t dutyDigits[3] = {0, 0, 0};
+uint8_t periodDigits[3] = {0, 0, 0};
+
+uint16_t getOffset()
+{
+	if (currentMenu == DUTY_MENU || currentMenu == PERIODS_MENU)
+		return (selectedNumberPosition - 1) * DIGIT_OFFSET;
+	else
+		return (selectedNumberPosition > 2) ? (selectedNumberPosition * DIGIT_OFFSET) : ((selectedNumberPosition - 1) * DIGIT_OFFSET);
+}
+
 void drawPointer()
 {
 	if (freezePointer == true)
@@ -41,22 +65,31 @@ void drawPointer()
 	}
 }
 
-void drawNumber(uint16_t arrayIndex, uint8_t lineIndex)
+void drawNumberLine(uint8_t numberVector[4], uint8_t lineIndex, uint8_t numberVectorLenght)
 {
-	tft.drawString(",", TEXT_BEGINNING + COMMA_OFFSET, lineIndex, GFXFF);
-	for (size_t i = 0; i < 4; i++)
+	if (numberVectorLenght == 4)
 	{
-		char number[2];
-		itoa(presetsArray[arrayIndex][i], number, 10);
-		uint16_t offset = (i >= 2) ? (i + 1) * DIGIT_OFFSET : i * DIGIT_OFFSET;
-		tft.drawString(number, TEXT_BEGINNING + offset, lineIndex, GFXFF);
+		tft.drawString(",", TEXT_BEGINNING + COMMA_OFFSET, lineCordinates[lineIndex], GFXFF);
+		for (size_t i = 0; i < numberVectorLenght; i++)
+		{
+			char number[2];
+			itoa(numberVector[i], number, 10);
+			uint16_t offset = (i >= 2) ? (i + 1) * DIGIT_OFFSET : i * DIGIT_OFFSET;
+			tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[lineIndex], GFXFF);
+		}
+	}
+	else if (numberVectorLenght == 3)
+	{
+		for (size_t i = 0; i < numberVectorLenght; i++)
+		{
+			char number[2];
+			itoa(numberVector[i], number, 10);
+			uint16_t offset = i * DIGIT_OFFSET;
+			tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[lineIndex], GFXFF);
+		}
 	}
 }
 
-uint16_t topShownLine;
-uint16_t scrollableLines;
-uint8_t addPosition;
-uint8_t removePosition;
 void drawScrollableMenu()
 {
 	tft.fillScreen(TFT_BLACK);
@@ -67,7 +100,7 @@ void drawScrollableMenu()
 		currentRow = 2; // Select first non-header line
 
 		tft.drawString("Presets", TEXT_BEGINNING, FIRST_LINE, GFXFF);
-		if (numberOfPresets == 0)
+		if (numberOfPresets == 0) // No presets
 		{
 
 			tft.drawString("No presets", TEXT_BEGINNING, SECOND_LINE, GFXFF);
@@ -83,7 +116,9 @@ void drawScrollableMenu()
 				presetsToShow = 2;
 			for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
 			{
-				drawNumber(i, lineCordinates[i - topShownLine + 1]);
+				uint8_t number[4];
+				memcpy(number, presetsArray[i], sizeof(number));
+				drawNumberLine(number, i - topShownLine + 1, 4);
 			}
 			addPosition = 0;
 			removePosition = 0;
@@ -103,9 +138,11 @@ void drawScrollableMenu()
 
 		if (presetsToShow > 3)
 			presetsToShow = 3;
-		for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
+		for (size_t i = topShownLine; i < (topShownLine + presetsToShow); i++)
 		{
-			drawNumber(i - 1, lineCordinates[i - topShownLine]); // Hopefully this is fine :)
+			uint8_t number[4];
+			memcpy(number, presetsArray[i - 1], sizeof(number));
+			drawNumberLine(number, i - topShownLine, 4);
 		}
 
 		addPosition = 0;
@@ -126,6 +163,7 @@ void drawScrollableMenu()
 		}
 	}
 }
+
 void drawScrollableRemoveMenu()
 {
 	tft.fillScreen(TFT_BLACK);
@@ -142,9 +180,11 @@ void drawScrollableRemoveMenu()
 			presetsToShow = 2;
 		for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
 		{
-			drawNumber(i, lineCordinates[i - topShownLine + 1]);
+			uint8_t number[4];
+			memcpy(number, presetsArray[i], sizeof(number));
+			drawNumberLine(number, i - topShownLine + 1, 4);
 		}
-		if (presetsToShow == 1)
+		if (presetsToShow == 1) // Not sure what is this for
 		{
 			numberOfRows = 2;
 		}
@@ -154,12 +194,13 @@ void drawScrollableRemoveMenu()
 		firstRow = 1; // Allow first line selection
 
 		uint8_t presetsToShow = numberOfPresets - topShownLine + 1;
-		Serial.println(presetsToShow);
 		if (presetsToShow > 3)
 			presetsToShow = 3;
-		for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
+		for (size_t i = topShownLine; i < (topShownLine + presetsToShow); i++)
 		{
-			drawNumber(i, lineCordinates[i - topShownLine]);
+			uint8_t number[4];
+			memcpy(number, presetsArray[i - 1], sizeof(number));
+			drawNumberLine(number, i - topShownLine, 4);
 		}
 	}
 }
@@ -180,14 +221,14 @@ void lineChange(uint8_t direction)
 			pointerState = false;
 			pointerTime = 0;
 		}
-		else if (currentMenu == 3 || currentMenu == 4)
+		else if (currentMenu == PRESETS_MENU || currentMenu == PRESETS_REMOVING_MENU)
 		{
 			if (topShownLine != 0) // Upper limit
 			{
 				topShownLine--;
-				if (currentMenu == 3)
+				if (currentMenu == PRESETS_MENU)
 					drawScrollableMenu();
-				else if (currentMenu == 4)
+				else if (currentMenu == PRESETS_REMOVING_MENU)
 					drawScrollableRemoveMenu();
 			}
 		}
@@ -202,7 +243,7 @@ void lineChange(uint8_t direction)
 			pointerState = false;
 			pointerTime = 0;
 		}
-		else if (currentMenu == 3)
+		else if (currentMenu == PRESETS_MENU)
 		{
 			if (topShownLine != numberOfPresets) // Bottom limit
 			{
@@ -211,7 +252,7 @@ void lineChange(uint8_t direction)
 				drawScrollableMenu();
 			}
 		}
-		else if (currentMenu == 4)
+		else if (currentMenu == PRESETS_REMOVING_MENU)
 		{
 			if (topShownLine < numberOfPresets - 2) // Bottom limit
 			{
@@ -224,10 +265,6 @@ void lineChange(uint8_t direction)
 	}
 }
 
-uint8_t selectedNumberPosition = 0;
-unsigned long underlineTime = 0;
-bool underlineState = false;
-bool enteringNumber = false;
 void drawUnderline()
 {
 	if (enteringNumber == false)
@@ -237,8 +274,7 @@ void drawUnderline()
 	if ((millis() - underlineTime) >= POINTER_DELAY)
 	{
 		underlineTime = millis();
-		uint16_t offset = (selectedNumberPosition > 2) ? (selectedNumberPosition)*DIGIT_OFFSET : (selectedNumberPosition - 1) * DIGIT_OFFSET;
-
+		uint16_t offset = getOffset();
 		if (underlineState == true)
 		{
 			tft.fillRect(TEXT_BEGINNING + offset, lineCordinates[currentRow - 1] + tft.fontHeight() - 4, tft.textWidth("0"), 2, TFT_BLACK);
@@ -252,9 +288,9 @@ void drawUnderline()
 	}
 }
 
-void numberEntry(uint8_t direction)
+void numberEntry(uint8_t direction, uint8_t numberOfDigits)
 {
-	uint16_t offset = (selectedNumberPosition > 2) ? (selectedNumberPosition)*DIGIT_OFFSET : (selectedNumberPosition - 1) * DIGIT_OFFSET;
+	uint16_t offset = getOffset();
 
 	tft.fillRect(TEXT_BEGINNING + offset, lineCordinates[currentRow - 1] + tft.fontHeight() - 4, tft.textWidth("0") + 2, 2, TFT_BLACK);
 
@@ -268,7 +304,7 @@ void numberEntry(uint8_t direction)
 			enteringNumber = true;
 			freezePointer = true;
 		}
-		if (selectedNumberPosition == 4) // exit
+		if (selectedNumberPosition == numberOfDigits) // exit
 		{
 			enteringNumber = false;
 			freezePointer = false;
@@ -276,8 +312,6 @@ void numberEntry(uint8_t direction)
 			selectedNumberPosition = 0;
 			break;
 		}
-		// if (selectedNumberPosition == 2)
-		// 	selectedNumberPosition++;
 		selectedNumberPosition++;
 		break;
 
@@ -290,44 +324,40 @@ void numberEntry(uint8_t direction)
 			selectedNumberPosition = 0;
 			break;
 		}
-		// if (selectedNumberPosition == 4)
-		// 	selectedNumberPosition--;
 		selectedNumberPosition--;
 		break;
 	}
 }
 
-uint8_t enteredDigits[4] = {0, 0, 0, 0};
 void numberChange(uint8_t direction)
 {
-	uint16_t offset = (selectedNumberPosition > 2) ? (selectedNumberPosition)*DIGIT_OFFSET : (selectedNumberPosition - 1) * DIGIT_OFFSET;
+	uint16_t offset = getOffset();
+
 	switch (currentMenu)
 	{
 	case MANUAL_MENU:
 		switch (direction)
 		{
 		case UP:
-			if (enteredDigits[(selectedNumberPosition - 1)] < 9)
+			if (manualDigits[selectedNumberPosition - 1] < 9)
 			{
-				enteredDigits[(selectedNumberPosition - 1)]++;
+				manualDigits[selectedNumberPosition - 1]++;
 
 				char number[2];
-				itoa(enteredDigits[(selectedNumberPosition - 1)], number, 10);
+				itoa(manualDigits[selectedNumberPosition - 1], number, 10);
 				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
 			}
-
 			break;
 
 		case DOWN:
-			if (enteredDigits[(selectedNumberPosition - 1)] > 0)
+			if (manualDigits[selectedNumberPosition - 1] > 0)
 			{
-				enteredDigits[(selectedNumberPosition - 1)]--;
+				manualDigits[selectedNumberPosition - 1]--;
 
 				char number[2];
-				itoa(enteredDigits[(selectedNumberPosition - 1)], number, 10);
+				itoa(manualDigits[selectedNumberPosition - 1], number, 10);
 				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
 			}
-
 			break;
 		}
 		break;
@@ -336,27 +366,79 @@ void numberChange(uint8_t direction)
 		switch (direction)
 		{
 		case UP:
-			if (presetsArray[topShownLine + currentRow - 2][(selectedNumberPosition - 1)] < 9)
+			if (presetsArray[topShownLine + currentRow - 2][selectedNumberPosition - 1] < 9)
 			{
-				presetsArray[topShownLine + currentRow - 2][(selectedNumberPosition - 1)]++;
+				presetsArray[topShownLine + currentRow - 2][selectedNumberPosition - 1]++;
 
 				char number[2];
-				itoa(presetsArray[topShownLine + currentRow - 2][(selectedNumberPosition - 1)], number, 10);
+				itoa(presetsArray[topShownLine + currentRow - 2][selectedNumberPosition - 1], number, 10);
 				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
 			}
-
 			break;
 
 		case DOWN:
-			if (presetsArray[topShownLine + currentRow - 2][(selectedNumberPosition - 1)] > 0)
+			if (presetsArray[topShownLine + currentRow - 2][selectedNumberPosition - 1] > 0)
 			{
-				presetsArray[topShownLine + currentRow - 2][(selectedNumberPosition - 1)]--;
+				presetsArray[topShownLine + currentRow - 2][selectedNumberPosition - 1]--;
 
 				char number[2];
-				itoa(presetsArray[topShownLine + currentRow - 2][(selectedNumberPosition - 1)], number, 10);
+				itoa(presetsArray[topShownLine + currentRow - 2][selectedNumberPosition - 1], number, 10);
 				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
 			}
+			break;
+		}
+		break;
 
+	case PERIODS_MENU:
+		switch (direction)
+		{
+		case UP:
+			if (periodDigits[selectedNumberPosition - 1] < 9)
+			{
+				periodDigits[selectedNumberPosition - 1]++;
+
+				char number[2];
+				itoa(periodDigits[selectedNumberPosition - 1], number, 10);
+				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
+			}
+			break;
+
+		case DOWN:
+			if (periodDigits[selectedNumberPosition - 1] > 0)
+			{
+				periodDigits[selectedNumberPosition - 1]--;
+
+				char number[2];
+				itoa(periodDigits[selectedNumberPosition - 1], number, 10);
+				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
+			}
+			break;
+		}
+		break;
+
+	case DUTY_MENU:
+		switch (direction)
+		{
+		case UP:
+			if (dutyDigits[selectedNumberPosition - 1] < 9)
+			{
+				dutyDigits[selectedNumberPosition - 1]++;
+
+				char number[2];
+				itoa(dutyDigits[selectedNumberPosition - 1], number, 10);
+				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
+			}
+			break;
+
+		case DOWN:
+			if (dutyDigits[selectedNumberPosition - 1] > 0)
+			{
+				dutyDigits[selectedNumberPosition - 1]--;
+
+				char number[2];
+				itoa(dutyDigits[selectedNumberPosition - 1], number, 10);
+				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
+			}
 			break;
 		}
 		break;

@@ -18,5 +18,7 @@ void homeMenu();
 void manualMenu();
 void presetMenu();
 void presetRemovingMenu();
+void periodsMenu();
+void dutyMenu();
 
 #endif // MENUS_H
