@@ -101,6 +101,7 @@ void returnNavigation()
 			break;
 		}
 		homeMenu();
+		savePresets();
 		break;
 
 	case PRESETS_REMOVING_MENU:

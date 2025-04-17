@@ -14,6 +14,12 @@
 #define PERIODS_MENU 5
 #define DUTY_MENU 6
 
+#define TEXT_BEGINNING 30
+#define POINTER_BEGINNING 10
+#define FIRST_LINE 18
+#define SECOND_LINE 57
+#define THIRD_LINE 96
+
 extern TFT_eSPI tft;
 
 extern uint16_t currentMenu;

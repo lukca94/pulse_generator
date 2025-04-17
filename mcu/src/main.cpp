@@ -30,8 +30,9 @@ void setup()
 	tft.setFreeFont(FF6);
 	tft.setTextColor(TFT_ORANGE, TFT_BLACK);
 
-	homeMenu();
+	loadPresets();
 
+	homeMenu();
 }
 
 void loop()
