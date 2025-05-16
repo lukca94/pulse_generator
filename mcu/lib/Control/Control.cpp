@@ -31,7 +31,7 @@ bool underlineState = false;
 bool enteringNumber = false;
 
 uint8_t manualDigits[4] = {0, 0, 0, 0};
-uint8_t dutyDigits[3] = {0, 0, 0};
+uint8_t dutyDigits[2] = {0, 0};
 uint8_t periodDigits[3] = {0, 0, 0};
 
 uint16_t getOffset()
@@ -47,6 +47,10 @@ void drawPointer()
 	if (freezePointer == true)
 	{
 		pointerState = false;
+	}
+	if (currentRow == 0)
+	{
+		pointerState = true;
 	}
 
 	if ((millis() - pointerTime) >= POINTER_DELAY)
@@ -78,7 +82,7 @@ void drawNumberLine(uint8_t numberVector[4], uint8_t lineIndex, uint8_t numberVe
 			tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[lineIndex], GFXFF);
 		}
 	}
-	else if (numberVectorLenght == 3)
+	else if (numberVectorLenght == 3 || numberVectorLenght == 2)
 	{
 		for (size_t i = 0; i < numberVectorLenght; i++)
 		{
@@ -99,7 +103,7 @@ void drawScrollableMenu()
 		firstRow = 2;	// Block first line selection
 		currentRow = 2; // Select first non-header line
 
-		tft.drawString("Presets", TEXT_BEGINNING, FIRST_LINE, GFXFF);
+		tft.drawString("Presets f (Hz)", TEXT_BEGINNING, FIRST_LINE, GFXFF);
 		if (numberOfPresets == 0) // No presets
 		{
 
@@ -267,7 +271,7 @@ void lineChange(uint8_t direction)
 
 void drawUnderline()
 {
-	if (enteringNumber == false)
+	if (enteringNumber == false || currentRow == 0)
 	{
 		return;
 	}

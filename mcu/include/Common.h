@@ -5,6 +5,9 @@
 #define SELECT_BUTTON 38
 #define RETURN_BUTTON 39
 
+#define INPUT_PIN 33
+#define OUTPUT_PIN 32
+
 #define NUMBER_OF_PRESETS 20
 
 #define HOME_MENU 1
@@ -13,6 +16,8 @@
 #define PRESETS_REMOVING_MENU 4
 #define PERIODS_MENU 5
 #define DUTY_MENU 6
+#define WAITING_MENU 7
+#define GENERATING_MENU 8
 
 #define TEXT_BEGINNING 30
 #define POINTER_BEGINNING 10
@@ -32,11 +37,12 @@ extern uint16_t topShownLine;
 // extern u_int8_t selectedNumberPosition;
 extern bool enteringNumber;
 extern bool pointerState;
+extern bool manual;
 // extern bool freezePointer;
 
 extern uint8_t manualDigits[4];
 extern int16_t presetsArray[NUMBER_OF_PRESETS][4];
-extern uint8_t dutyDigits[3];
+extern uint8_t dutyDigits[2];
 extern uint8_t periodDigits[3];
 
 extern uint16_t numberOfPresets;

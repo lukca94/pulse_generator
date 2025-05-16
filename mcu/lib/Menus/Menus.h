@@ -8,13 +8,13 @@
 #define SELECT 0
 #define RETURN 1
 
-
-
 void homeMenu();
 void manualMenu();
 void presetMenu();
 void presetRemovingMenu();
 void periodsMenu();
 void dutyMenu();
+void waitingMenu();
+void generatingMenu();
 
 #endif // MENUS_H

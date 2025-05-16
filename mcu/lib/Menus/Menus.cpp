@@ -35,7 +35,7 @@ void manualMenu() // Menu 2
 	// pointerTime = 0;
 
 	tft.fillScreen(TFT_BLACK);
-	tft.drawString("Enter f (Hz):", TEXT_BEGINNING, FIRST_LINE, GFXFF);
+	tft.drawString("Enter f (Hz)", TEXT_BEGINNING, FIRST_LINE, GFXFF);
 	drawNumberLine(manualDigits, 1, 4);
 	tft.drawString("Run", TEXT_BEGINNING, THIRD_LINE, GFXFF);
 }
@@ -80,7 +80,7 @@ void periodsMenu()
 	// pointerTime = 0;
 
 	tft.fillScreen(TFT_BLACK);
-	tft.drawString("Periods:", TEXT_BEGINNING, FIRST_LINE, GFXFF);
+	tft.drawString("Periods", TEXT_BEGINNING, FIRST_LINE, GFXFF);
 	drawNumberLine(periodDigits, 1, 3);
 	tft.drawString("Continue", TEXT_BEGINNING, THIRD_LINE, GFXFF);
 }
@@ -96,7 +96,38 @@ void dutyMenu()
 	// pointerTime = 0;
 
 	tft.fillScreen(TFT_BLACK);
-	tft.drawString("Duty (%):", TEXT_BEGINNING, FIRST_LINE, GFXFF);
-	drawNumberLine(dutyDigits, 1, 3);
+	tft.drawString("Duty (%)", TEXT_BEGINNING, FIRST_LINE, GFXFF);
+	drawNumberLine(dutyDigits, 1, 2);
 	tft.drawString("Continue", TEXT_BEGINNING, THIRD_LINE, GFXFF);
+}
+
+void waitingMenu()
+{
+	currentMenu = WAITING_MENU;
+	currentRow = 0;
+	firstRow = 0;
+	numberOfRows = 0;
+
+	pointerState = false;
+	// pointerTime = 0;
+
+	tft.fillScreen(TFT_BLACK);
+	tft.drawString("Waiting for", TEXT_BEGINNING, FIRST_LINE, GFXFF);
+	tft.drawString("a PPS signal", TEXT_BEGINNING, SECOND_LINE, GFXFF);
+	tft.drawString("...", TEXT_BEGINNING, THIRD_LINE, GFXFF);
+}
+void generatingMenu()
+{
+	currentMenu = GENERATING_MENU;
+	currentRow = 0;
+	firstRow = 0;
+	numberOfRows = 0;
+
+	pointerState = false;
+	// pointerTime = 0;
+
+	tft.fillScreen(TFT_BLACK);
+	tft.drawString("Signal is", TEXT_BEGINNING, FIRST_LINE, GFXFF);
+	tft.drawString("generated", TEXT_BEGINNING, SECOND_LINE, GFXFF);
+	tft.drawString("...", TEXT_BEGINNING, THIRD_LINE, GFXFF);
 }

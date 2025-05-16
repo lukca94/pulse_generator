@@ -4,6 +4,7 @@
 #include "Control.h"
 #include "../../include/Common.h"
 #include "Presets.h"
+#include "Run.h"
 
 uint16_t currentMenu;
 uint16_t currentRow;
@@ -25,6 +26,7 @@ void selectNavigation()
 			break;
 		case 3:
 			periodsMenu();
+			manual = false;
 			break;
 		}
 		break;
@@ -37,6 +39,7 @@ void selectNavigation()
 			break;
 		case 3:
 			periodsMenu();
+			manual = true;
 			break;
 		}
 		break;
@@ -71,11 +74,10 @@ void selectNavigation()
 		switch (currentRow)
 		{
 		case 2:
-			numberEntry(SELECT, 3);
+			numberEntry(SELECT, 2);
 			break;
 		case 3:
-			// presets/manual
-			// Start it all
+			run();
 			break;
 		}
 		break;
@@ -119,7 +121,7 @@ void returnNavigation()
 	case DUTY_MENU:
 		if (enteringNumber == true)
 		{
-			numberEntry(RETURN, 3);
+			numberEntry(RETURN, 2);
 			break;
 		}
 		periodsMenu();

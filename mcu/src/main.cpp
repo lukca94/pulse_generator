@@ -23,6 +23,9 @@ void setup()
 	pinMode(SELECT_BUTTON, INPUT);
 	pinMode(RETURN_BUTTON, INPUT);
 
+	pinMode(INPUT_PIN,INPUT);
+	pinMode(OUTPUT_PIN, OUTPUT);
+
 	Serial.begin(9600);
 
 	tft.begin();
