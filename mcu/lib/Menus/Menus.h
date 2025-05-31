@@ -12,7 +12,7 @@ void homeMenu();
 void manualMenu();
 void presetMenu();
 void presetRemovingMenu();
-void periodsMenu();
+void durationMenu();
 void dutyMenu();
 void waitingMenu();
 void generatingMenu();

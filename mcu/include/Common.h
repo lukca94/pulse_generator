@@ -14,7 +14,7 @@
 #define MANUAL_MENU 2
 #define PRESETS_MENU 3
 #define PRESETS_REMOVING_MENU 4
-#define PERIODS_MENU 5
+#define DURATION_MENU 5
 #define DUTY_MENU 6
 #define WAITING_MENU 7
 #define GENERATING_MENU 8
@@ -43,7 +43,7 @@ extern bool manual;
 extern uint8_t manualDigits[4];
 extern int16_t presetsArray[NUMBER_OF_PRESETS][4];
 extern uint8_t dutyDigits[2];
-extern uint8_t periodDigits[3];
+extern uint8_t durationDigits[3];
 
 extern uint16_t numberOfPresets;
 

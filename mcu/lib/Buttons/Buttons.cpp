@@ -51,7 +51,7 @@ void selectButtonPress()
 unsigned long returnButtonTime = 0;
 void returnButtonPress()
 {
-	int state = digitalRead(RETURN_BUTTON);
+	uint8_t state = digitalRead(RETURN_BUTTON);
 	if (state == 1)
 	{
 		if ((millis() - returnButtonTime) >= BUTTON_DELAY)

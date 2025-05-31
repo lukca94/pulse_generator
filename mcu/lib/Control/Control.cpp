@@ -1,6 +1,5 @@
 #include "../../include/Free_Fonts.h"
 #include <Arduino.h>
-#include <SPI.h>
 #include <TFT_eSPI.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -13,7 +12,7 @@
 #define DIGIT_OFFSET 30
 #define COMMA_OFFSET 60
 
-int lineCordinates[] = {FIRST_LINE, SECOND_LINE, THIRD_LINE};
+int lineCoordinates[] = {FIRST_LINE, SECOND_LINE, THIRD_LINE};
 
 uint8_t selectedNumberPosition = 0;
 
@@ -32,11 +31,11 @@ bool enteringNumber = false;
 
 uint8_t manualDigits[4] = {0, 0, 0, 0};
 uint8_t dutyDigits[2] = {0, 0};
-uint8_t periodDigits[3] = {0, 0, 0};
+uint8_t durationDigits[3] = {0, 0, 0};
 
 uint16_t getOffset()
 {
-	if (currentMenu == DUTY_MENU || currentMenu == PERIODS_MENU)
+	if (currentMenu == DUTY_MENU || currentMenu == DURATION_MENU)
 		return (selectedNumberPosition - 1) * DIGIT_OFFSET;
 	else
 		return (selectedNumberPosition > 2) ? (selectedNumberPosition * DIGIT_OFFSET) : ((selectedNumberPosition - 1) * DIGIT_OFFSET);
@@ -58,12 +57,12 @@ void drawPointer()
 		pointerTime = millis();
 		if (pointerState == true)
 		{
-			tft.drawString("  ", POINTER_BEGINNING, lineCordinates[currentRow - 1], GFXFF);
+			tft.drawString("  ", POINTER_BEGINNING, lineCoordinates[currentRow - 1], GFXFF);
 			pointerState = false;
 		}
 		else
 		{
-			tft.drawString(">", POINTER_BEGINNING, lineCordinates[currentRow - 1], GFXFF);
+			tft.drawString(">", POINTER_BEGINNING, lineCoordinates[currentRow - 1], GFXFF);
 			pointerState = true;
 		}
 	}
@@ -73,13 +72,15 @@ void drawNumberLine(uint8_t numberVector[4], uint8_t lineIndex, uint8_t numberVe
 {
 	if (numberVectorLenght == 4)
 	{
-		tft.drawString(",", TEXT_BEGINNING + COMMA_OFFSET, lineCordinates[lineIndex], GFXFF);
+		
+		tft.drawString(",", TEXT_BEGINNING + COMMA_OFFSET, lineCoordinates[lineIndex], GFXFF);
 		for (size_t i = 0; i < numberVectorLenght; i++)
 		{
+
 			char number[2];
 			itoa(numberVector[i], number, 10);
 			uint16_t offset = (i >= 2) ? (i + 1) * DIGIT_OFFSET : i * DIGIT_OFFSET;
-			tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[lineIndex], GFXFF);
+			tft.drawString(number, TEXT_BEGINNING + offset, lineCoordinates[lineIndex], GFXFF);
 		}
 	}
 	else if (numberVectorLenght == 3 || numberVectorLenght == 2)
@@ -89,7 +90,7 @@ void drawNumberLine(uint8_t numberVector[4], uint8_t lineIndex, uint8_t numberVe
 			char number[2];
 			itoa(numberVector[i], number, 10);
 			uint16_t offset = i * DIGIT_OFFSET;
-			tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[lineIndex], GFXFF);
+			tft.drawString(number, TEXT_BEGINNING + offset, lineCoordinates[lineIndex], GFXFF);
 		}
 	}
 }
@@ -121,7 +122,15 @@ void drawScrollableMenu()
 			for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
 			{
 				uint8_t number[4];
+				Serial.println(presetsArray[i][0]);
+				Serial.println(presetsArray[i][1]);
+				Serial.println(presetsArray[i][2]);
+				Serial.println(presetsArray[i][3]);
 				memcpy(number, presetsArray[i], sizeof(number));
+				Serial.println(number[0]);
+				Serial.println(number[1]);
+				Serial.println(number[2]);
+				Serial.println(number[3]);
 				drawNumberLine(number, i - topShownLine + 1, 4);
 			}
 			addPosition = 0;
@@ -220,7 +229,7 @@ void lineChange(uint8_t direction)
 	case UP:
 		if (firstRow < currentRow)
 		{
-			tft.drawString("  ", POINTER_BEGINNING, lineCordinates[currentRow - 1], GFXFF);
+			tft.drawString("  ", POINTER_BEGINNING, lineCoordinates[currentRow - 1], GFXFF);
 			currentRow--;
 			pointerState = false;
 			pointerTime = 0;
@@ -242,7 +251,7 @@ void lineChange(uint8_t direction)
 	case DOWN:
 		if (currentRow < numberOfRows)
 		{
-			tft.drawString("  ", POINTER_BEGINNING, lineCordinates[currentRow - 1], GFXFF);
+			tft.drawString("  ", POINTER_BEGINNING, lineCoordinates[currentRow - 1], GFXFF);
 			currentRow++;
 			pointerState = false;
 			pointerTime = 0;
@@ -281,12 +290,12 @@ void drawUnderline()
 		uint16_t offset = getOffset();
 		if (underlineState == true)
 		{
-			tft.fillRect(TEXT_BEGINNING + offset, lineCordinates[currentRow - 1] + tft.fontHeight() - 4, tft.textWidth("0"), 2, TFT_BLACK);
+			tft.fillRect(TEXT_BEGINNING + offset, lineCoordinates[currentRow - 1] + tft.fontHeight() - 4, tft.textWidth("0"), 2, TFT_BLACK);
 			underlineState = false;
 		}
 		else
 		{
-			tft.fillRect(TEXT_BEGINNING + offset, lineCordinates[currentRow - 1] + tft.fontHeight() - 4, tft.textWidth("0"), 2, TFT_ORANGE);
+			tft.fillRect(TEXT_BEGINNING + offset, lineCoordinates[currentRow - 1] + tft.fontHeight() - 4, tft.textWidth("0"), 2, TFT_ORANGE);
 			underlineState = true;
 		}
 	}
@@ -296,7 +305,7 @@ void numberEntry(uint8_t direction, uint8_t numberOfDigits)
 {
 	uint16_t offset = getOffset();
 
-	tft.fillRect(TEXT_BEGINNING + offset, lineCordinates[currentRow - 1] + tft.fontHeight() - 4, tft.textWidth("0") + 2, 2, TFT_BLACK);
+	tft.fillRect(TEXT_BEGINNING + offset, lineCoordinates[currentRow - 1] + tft.fontHeight() - 4, tft.textWidth("0") + 2, 2, TFT_BLACK);
 
 	underlineState = false;
 
@@ -349,7 +358,7 @@ void numberChange(uint8_t direction)
 
 				char number[2];
 				itoa(manualDigits[selectedNumberPosition - 1], number, 10);
-				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
+				tft.drawString(number, TEXT_BEGINNING + offset, lineCoordinates[currentRow - 1], GFXFF);
 			}
 			break;
 
@@ -360,7 +369,7 @@ void numberChange(uint8_t direction)
 
 				char number[2];
 				itoa(manualDigits[selectedNumberPosition - 1], number, 10);
-				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
+				tft.drawString(number, TEXT_BEGINNING + offset, lineCoordinates[currentRow - 1], GFXFF);
 			}
 			break;
 		}
@@ -376,7 +385,7 @@ void numberChange(uint8_t direction)
 
 				char number[2];
 				itoa(presetsArray[topShownLine + currentRow - 2][selectedNumberPosition - 1], number, 10);
-				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
+				tft.drawString(number, TEXT_BEGINNING + offset, lineCoordinates[currentRow - 1], GFXFF);
 			}
 			break;
 
@@ -387,34 +396,34 @@ void numberChange(uint8_t direction)
 
 				char number[2];
 				itoa(presetsArray[topShownLine + currentRow - 2][selectedNumberPosition - 1], number, 10);
-				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
+				tft.drawString(number, TEXT_BEGINNING + offset, lineCoordinates[currentRow - 1], GFXFF);
 			}
 			break;
 		}
 		break;
 
-	case PERIODS_MENU:
+	case DURATION_MENU:
 		switch (direction)
 		{
 		case UP:
-			if (periodDigits[selectedNumberPosition - 1] < 9)
+			if (durationDigits[selectedNumberPosition - 1] < 9)
 			{
-				periodDigits[selectedNumberPosition - 1]++;
+				durationDigits[selectedNumberPosition - 1]++;
 
 				char number[2];
-				itoa(periodDigits[selectedNumberPosition - 1], number, 10);
-				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
+				itoa(durationDigits[selectedNumberPosition - 1], number, 10);
+				tft.drawString(number, TEXT_BEGINNING + offset, lineCoordinates[currentRow - 1], GFXFF);
 			}
 			break;
 
 		case DOWN:
-			if (periodDigits[selectedNumberPosition - 1] > 0)
+			if (durationDigits[selectedNumberPosition - 1] > 0)
 			{
-				periodDigits[selectedNumberPosition - 1]--;
+				durationDigits[selectedNumberPosition - 1]--;
 
 				char number[2];
-				itoa(periodDigits[selectedNumberPosition - 1], number, 10);
-				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
+				itoa(durationDigits[selectedNumberPosition - 1], number, 10);
+				tft.drawString(number, TEXT_BEGINNING + offset, lineCoordinates[currentRow - 1], GFXFF);
 			}
 			break;
 		}
@@ -430,7 +439,7 @@ void numberChange(uint8_t direction)
 
 				char number[2];
 				itoa(dutyDigits[selectedNumberPosition - 1], number, 10);
-				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
+				tft.drawString(number, TEXT_BEGINNING + offset, lineCoordinates[currentRow - 1], GFXFF);
 			}
 			break;
 
@@ -441,7 +450,7 @@ void numberChange(uint8_t direction)
 
 				char number[2];
 				itoa(dutyDigits[selectedNumberPosition - 1], number, 10);
-				tft.drawString(number, TEXT_BEGINNING + offset, lineCordinates[currentRow - 1], GFXFF);
+				tft.drawString(number, TEXT_BEGINNING + offset, lineCoordinates[currentRow - 1], GFXFF);
 			}
 			break;
 		}
