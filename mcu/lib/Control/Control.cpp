@@ -29,9 +29,9 @@ unsigned long underlineTime = 0;
 bool underlineState = false;
 bool enteringNumber = false;
 
-uint8_t manualDigits[4] = {0, 0, 0, 0};
-uint8_t dutyDigits[2] = {0, 0};
-uint8_t durationDigits[3] = {0, 0, 0};
+int16_t manualDigits[4] = {0, 0, 0, 0};
+int16_t dutyDigits[2] = {0, 0};
+int16_t durationDigits[3] = {0, 0, 0};
 
 uint16_t getOffset()
 {
@@ -68,29 +68,28 @@ void drawPointer()
 	}
 }
 
-void drawNumberLine(uint8_t numberVector[4], uint8_t lineIndex, uint8_t numberVectorLenght)
+void drawNumberLine(int16_t *number, uint8_t lineIndex, uint8_t numberVectorLenght)
 {
 	if (numberVectorLenght == 4)
 	{
-		
+
 		tft.drawString(",", TEXT_BEGINNING + COMMA_OFFSET, lineCoordinates[lineIndex], GFXFF);
 		for (size_t i = 0; i < numberVectorLenght; i++)
 		{
-
-			char number[2];
-			itoa(numberVector[i], number, 10);
+			char numberString[2];
+			itoa(number[i], numberString, 10);
 			uint16_t offset = (i >= 2) ? (i + 1) * DIGIT_OFFSET : i * DIGIT_OFFSET;
-			tft.drawString(number, TEXT_BEGINNING + offset, lineCoordinates[lineIndex], GFXFF);
+			tft.drawString(numberString, TEXT_BEGINNING + offset, lineCoordinates[lineIndex], GFXFF);
 		}
 	}
 	else if (numberVectorLenght == 3 || numberVectorLenght == 2)
 	{
 		for (size_t i = 0; i < numberVectorLenght; i++)
 		{
-			char number[2];
-			itoa(numberVector[i], number, 10);
+			char numberString[2];
+			itoa(number[i], numberString, 10);
 			uint16_t offset = i * DIGIT_OFFSET;
-			tft.drawString(number, TEXT_BEGINNING + offset, lineCoordinates[lineIndex], GFXFF);
+			tft.drawString(numberString, TEXT_BEGINNING + offset, lineCoordinates[lineIndex], GFXFF);
 		}
 	}
 }
@@ -121,17 +120,17 @@ void drawScrollableMenu()
 				presetsToShow = 2;
 			for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
 			{
-				uint8_t number[4];
-				Serial.println(presetsArray[i][0]);
-				Serial.println(presetsArray[i][1]);
-				Serial.println(presetsArray[i][2]);
-				Serial.println(presetsArray[i][3]);
-				memcpy(number, presetsArray[i], sizeof(number));
-				Serial.println(number[0]);
-				Serial.println(number[1]);
-				Serial.println(number[2]);
-				Serial.println(number[3]);
-				drawNumberLine(number, i - topShownLine + 1, 4);
+				// uint8_t number[4];
+				// Serial.println(presetsArray[i][0]);
+				// Serial.println(presetsArray[i][1]);
+				// Serial.println(presetsArray[i][2]);
+				// Serial.println(presetsArray[i][3]);
+				// memcpy(number, presetsArray[i], sizeof(number));
+				// Serial.println(number[0]);
+				// Serial.println(number[1]);
+				// Serial.println(number[2]);
+				// Serial.println(number[3]);
+				drawNumberLine(presetsArray[i], i - topShownLine + 1, 4);
 			}
 			addPosition = 0;
 			removePosition = 0;
@@ -153,9 +152,8 @@ void drawScrollableMenu()
 			presetsToShow = 3;
 		for (size_t i = topShownLine; i < (topShownLine + presetsToShow); i++)
 		{
-			uint8_t number[4];
-			memcpy(number, presetsArray[i - 1], sizeof(number));
-			drawNumberLine(number, i - topShownLine, 4);
+
+			drawNumberLine(presetsArray[i - 1], i - topShownLine, 4);
 		}
 
 		addPosition = 0;
@@ -193,9 +191,7 @@ void drawScrollableRemoveMenu()
 			presetsToShow = 2;
 		for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
 		{
-			uint8_t number[4];
-			memcpy(number, presetsArray[i], sizeof(number));
-			drawNumberLine(number, i - topShownLine + 1, 4);
+			drawNumberLine(presetsArray[i], i - topShownLine + 1, 4);
 		}
 		if (presetsToShow == 1) // Not sure what is this for
 		{
@@ -211,9 +207,7 @@ void drawScrollableRemoveMenu()
 			presetsToShow = 3;
 		for (size_t i = topShownLine; i < (topShownLine + presetsToShow); i++)
 		{
-			uint8_t number[4];
-			memcpy(number, presetsArray[i - 1], sizeof(number));
-			drawNumberLine(number, i - topShownLine, 4);
+			drawNumberLine(presetsArray[i - 1], i - topShownLine, 4);
 		}
 	}
 }

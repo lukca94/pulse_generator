@@ -40,10 +40,10 @@ extern bool pointerState;
 extern bool manual;
 // extern bool freezePointer;
 
-extern uint8_t manualDigits[4];
+extern int16_t manualDigits[4];
 extern int16_t presetsArray[NUMBER_OF_PRESETS][4];
-extern uint8_t dutyDigits[2];
-extern uint8_t durationDigits[3];
+extern int16_t dutyDigits[2];
+extern int16_t durationDigits[3];
 
 extern uint16_t numberOfPresets;
 
