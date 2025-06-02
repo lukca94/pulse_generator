@@ -43,11 +43,11 @@ uint16_t getOffset()
 
 void drawPointer()
 {
-	if (freezePointer == true)
+	if (freezePointer == true) 	// pointer stopped
 	{
 		pointerState = false;
 	}
-	if (currentRow == 0)
+	if (currentRow == 0) 		// pointer disabled
 	{
 		pointerState = true;
 	}
@@ -72,7 +72,6 @@ void drawNumberLine(int16_t *number, uint8_t lineIndex, uint8_t numberVectorLeng
 {
 	if (numberVectorLenght == 4)
 	{
-
 		tft.drawString(",", TEXT_BEGINNING + COMMA_OFFSET, lineCoordinates[lineIndex], GFXFF);
 		for (size_t i = 0; i < numberVectorLenght; i++)
 		{
@@ -106,7 +105,6 @@ void drawScrollableMenu()
 		tft.drawString("Presets f (Hz)", TEXT_BEGINNING, FIRST_LINE, GFXFF);
 		if (numberOfPresets == 0) // No presets
 		{
-
 			tft.drawString("No presets", TEXT_BEGINNING, SECOND_LINE, GFXFF);
 			tft.drawString("Add", TEXT_BEGINNING, THIRD_LINE, GFXFF);
 
@@ -120,16 +118,6 @@ void drawScrollableMenu()
 				presetsToShow = 2;
 			for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
 			{
-				// uint8_t number[4];
-				// Serial.println(presetsArray[i][0]);
-				// Serial.println(presetsArray[i][1]);
-				// Serial.println(presetsArray[i][2]);
-				// Serial.println(presetsArray[i][3]);
-				// memcpy(number, presetsArray[i], sizeof(number));
-				// Serial.println(number[0]);
-				// Serial.println(number[1]);
-				// Serial.println(number[2]);
-				// Serial.println(number[3]);
 				drawNumberLine(presetsArray[i], i - topShownLine + 1, 4);
 			}
 			addPosition = 0;
@@ -190,13 +178,8 @@ void drawScrollableRemoveMenu()
 		if (presetsToShow > 2)
 			presetsToShow = 2;
 		for (size_t i = topShownLine; i < topShownLine + presetsToShow; i++)
-		{
 			drawNumberLine(presetsArray[i], i - topShownLine + 1, 4);
-		}
-		if (presetsToShow == 1) // Not sure what is this for
-		{
-			numberOfRows = 2;
-		}
+		
 	}
 	else // Don't show header
 	{
@@ -206,9 +189,7 @@ void drawScrollableRemoveMenu()
 		if (presetsToShow > 3)
 			presetsToShow = 3;
 		for (size_t i = topShownLine; i < (topShownLine + presetsToShow); i++)
-		{
 			drawNumberLine(presetsArray[i - 1], i - topShownLine, 4);
-		}
 	}
 }
 

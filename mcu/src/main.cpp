@@ -11,10 +11,7 @@
 
 // screen size 135x240
 TFT_eSPI tft = TFT_eSPI();
-// tft.setFreeFont(FF2);  // Free mono 12pt
 
-// tft.setFreeFont(FF6);	// bold
-// tft.drawString("Hia", 100, 70, GFXFF);
 
 void setup()
 {

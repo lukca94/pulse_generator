@@ -34,11 +34,9 @@ extern uint16_t numberOfRows;
 
 extern uint16_t topShownLine;
 
-// extern u_int8_t selectedNumberPosition;
 extern bool enteringNumber;
 extern bool pointerState;
 extern bool manual;
-// extern bool freezePointer;
 
 extern int16_t manualDigits[4];
 extern int16_t presetsArray[NUMBER_OF_PRESETS][4];

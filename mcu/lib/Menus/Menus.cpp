@@ -10,13 +10,12 @@
 
 void homeMenu() // Menu 1
 {
-	currentMenu = HOME_MENU;
-	currentRow = 1;
-	firstRow = 1;
-	numberOfRows = 3;
+	currentMenu = HOME_MENU;	// Menu identifier
+	currentRow = 1;				// Initial cursor position
+	firstRow = 1;				// Top cursor movement restriction
+	numberOfRows = 3;			// Bottom cursor movement restriction
 
-	pointerState = false;
-	// pointerTime = 0;
+	pointerState = false;		// Reset pointer animation
 
 	tft.fillScreen(TFT_BLACK);
 	tft.drawString("Manual", TEXT_BEGINNING, FIRST_LINE, GFXFF);
@@ -31,14 +30,13 @@ void manualMenu() // Menu 2
 	numberOfRows = 3;
 
 	pointerState = false;
-	// pointerTime = 0;
 
 	tft.fillScreen(TFT_BLACK);
 	tft.drawString("Enter f (Hz)", TEXT_BEGINNING, FIRST_LINE, GFXFF);
 	drawNumberLine(manualDigits, 1, 4);
 	tft.drawString("Run", TEXT_BEGINNING, THIRD_LINE, GFXFF);
 }
-void presetMenu()
+void presetMenu() // Menu 3
 {
 	currentMenu = PRESETS_MENU;
 	currentRow = 2;
@@ -47,13 +45,13 @@ void presetMenu()
 	topShownLine = 0;
 
 	pointerState = false;
-	// pointerTime = 0;
+	
 
 	tft.fillScreen(TFT_BLACK);
 	drawScrollableMenu();
 }
 
-void presetRemovingMenu()
+void presetRemovingMenu() // Menu 4
 {
 	currentMenu = PRESETS_REMOVING_MENU;
 	currentRow = 2;
@@ -62,13 +60,12 @@ void presetRemovingMenu()
 	topShownLine = 0;
 
 	pointerState = false;
-	// pointerTime = 0;
 
 	tft.fillScreen(TFT_BLACK);
 	drawScrollableRemoveMenu();
 }
 
-void durationMenu()
+void durationMenu() // Menu 5
 {
 	currentMenu = DURATION_MENU;
 	currentRow = 2;
@@ -76,7 +73,6 @@ void durationMenu()
 	numberOfRows = 3;
 
 	pointerState = false;
-	// pointerTime = 0;
 
 	tft.fillScreen(TFT_BLACK);
 	tft.drawString("Duration (s)", TEXT_BEGINNING, FIRST_LINE, GFXFF);
@@ -84,7 +80,7 @@ void durationMenu()
 	tft.drawString("Continue", TEXT_BEGINNING, THIRD_LINE, GFXFF);
 }
 
-void dutyMenu()
+void dutyMenu() // Menu 6
 {
 	currentMenu = DUTY_MENU;
 	currentRow = 2;
@@ -92,7 +88,6 @@ void dutyMenu()
 	numberOfRows = 3;
 
 	pointerState = false;
-	// pointerTime = 0;
 
 	tft.fillScreen(TFT_BLACK);
 	tft.drawString("Duty (%)", TEXT_BEGINNING, FIRST_LINE, GFXFF);
@@ -100,7 +95,7 @@ void dutyMenu()
 	tft.drawString("Continue", TEXT_BEGINNING, THIRD_LINE, GFXFF);
 }
 
-void waitingMenu()
+void waitingMenu() // Menu 7
 {
 	currentMenu = WAITING_MENU;
 	currentRow = 0;
@@ -108,14 +103,13 @@ void waitingMenu()
 	numberOfRows = 0;
 
 	pointerState = false;
-	// pointerTime = 0;
 
 	tft.fillScreen(TFT_BLACK);
 	tft.drawString("Waiting for", TEXT_BEGINNING, FIRST_LINE, GFXFF);
 	tft.drawString("a PPS signal", TEXT_BEGINNING, SECOND_LINE, GFXFF);
 	tft.drawString("...", TEXT_BEGINNING, THIRD_LINE, GFXFF);
 }
-void generatingMenu()
+void generatingMenu() // Menu 8
 {
 	currentMenu = GENERATING_MENU;
 	currentRow = 0;
@@ -123,7 +117,6 @@ void generatingMenu()
 	numberOfRows = 0;
 
 	pointerState = false;
-	// pointerTime = 0;
 
 	tft.fillScreen(TFT_BLACK);
 	tft.drawString("Signal is", TEXT_BEGINNING, FIRST_LINE, GFXFF);

@@ -9,15 +9,15 @@
 
 Preferences pref;
 
-int16_t presetsArray[NUMBER_OF_PRESETS][4] = {-1};
-uint16_t numberOfPresets = 0;
+int16_t presetsArray[NUMBER_OF_PRESETS][4] = {-1}; // Array to store presets
+uint16_t numberOfPresets = 0; // Number of stored presets
 
 uint32_t saveTime = 0;
 int16_t presetsArrayPrevious[NUMBER_OF_PRESETS][4];
 
 void addPreset()
 {
-	if (numberOfPresets == NUMBER_OF_PRESETS) // Maximum number of presets..
+	if (numberOfPresets == NUMBER_OF_PRESETS) // Maximum number of presets
 		return;
 
 	int16_t newRow[4] = {0, 0, 0, 0};
@@ -28,7 +28,7 @@ void addPreset()
 
 void removePreset(uint16_t index)
 {
-	if (numberOfPresets == 0) // Nothing to remove
+	if (numberOfPresets == 0) // nothing to remove
 		return;
 
 	for (size_t i = index; i < (numberOfPresets - index); i++)
@@ -36,7 +36,7 @@ void removePreset(uint16_t index)
 		memcpy(presetsArray[i], presetsArray[i + 1], sizeof(presetsArray[i + 1]));
 	}
 
-	int16_t emptyRow[4] = {-1, -1, -1, -1};
+	int16_t emptyRow[4] = {-1, -1, -1, -1}; // last row empty
 	memcpy(presetsArray[numberOfPresets], emptyRow, sizeof(emptyRow));
 
 	numberOfPresets--;
@@ -57,7 +57,7 @@ void loadPresets()
 
 void savePresets()
 {
-	if (presetsArray != presetsArrayPrevious)
+	if (presetsArray != presetsArrayPrevious) // change detect
 	{
 		pref.putBytes("presets", presetsArray, sizeof(presetsArray));
 		memcpy(presetsArrayPrevious, presetsArray, sizeof(presetsArray));
